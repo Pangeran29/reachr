@@ -519,101 +519,73 @@ export function HeroSection() {
     }
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setAnalysisError(null)
 
     if (!validateForm()) return
 
+    // Set the view to "analyzing" while the form is being submitted
+    setCurrentView("analyzing")
     setIsSubmitting(true)
 
-    // Simulate form submission delay
-    setTimeout(() => {
-      setIsSubmitting(false)
-
-      // Start analysis
-      setIsAnalyzing(true)
-      setCurrentView("analyzing")
-      setAnalysisType("clients")
-
-      // Clear any existing timeout
-      if (analysisTimeout) {
-        clearTimeout(analysisTimeout)
+    try {
+      // Prepare the request body
+      const requestBody = {
+        businessDescription: formData.description,
       }
 
-      // Set a timeout to revert if analysis takes too long (simulating a real-world timeout)
-      const timeout = setTimeout(() => {
-        if (currentView === "analyzing") {
-          setIsAnalyzing(false)
-          setAnalysisError("Analysis timed out. Please try again with more specific information.")
-          setCurrentView("form")
-        }
-      }, 10000) // 10 second timeout
+      // Make the API call
+      const response = await fetch(
+        "https://reacher-api.alifwide.workers.dev/api/generate-potential-clients",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        },
+      )
 
-      setAnalysisTimeout(timeout)
-      setAnalysisAttempts((prev) => prev + 1)
+      if (!response.ok) {
+        throw new Error("Failed to fetch potential clients. Please try again.")
+      }
 
-      // Simulate AI analysis
+      // Parse the response
+      const data = await response.json();
+
+      // Extract places and map them to the PotentialClient format
+      const places = data.places.places || [];
+      const potentialClients = places.map((place, index) => ({
+        id: `client-${index + 1}`,
+        name: place.displayName.text,
+        address: place.formattedAddress,
+        phoneNumber: place.nationalPhoneNumber,
+        industry: "Unknown", // You can update this if the API provides industry info
+        matchScore: Math.floor(Math.random() * 30) + 70, // Generate a random match score
+        tags: ["High Growth", "Local"], // Add default tags or customize based on API response
+      }));
+
+      // Update state with the API response
+      setPotentialClients(potentialClients);
+      setAnalysisResults({
+        potentialCustomers: places.length,
+        insights: data.keywords || [],
+        timestamp: new Date().toLocaleString(),
+      });
+
+      // Transition to client results view
       setTimeout(() => {
-        // Clear the timeout since analysis completed
-        clearTimeout(timeout)
-        setAnalysisTimeout(null)
-        setIsAnalyzing(false)
-
-        // Check if analysis is insufficient
-        const { insufficient, reason } = isAnalysisInsufficient(formData)
-
-        if (insufficient) {
-          setAnalysisError(reason)
-          setCurrentView("form")
-          return
-        }
-
-        // Determine if information is sufficient based on form completeness
-        // In a real app, this would be determined by AI analysis
-        const isDetailedEnough =
-          formData.description.length > 20 &&
-          (currentStep === 1 ? formData.location.length > 0 && formData.sector.length > 0 : true)
-
-        setIsSufficientInfo(isDetailedEnough)
-
-        if (isDetailedEnough) {
-          // Generate random number of potential customers between 500-2000
-          const customers = Math.floor(Math.random() * 1500) + 500
-          setPotentialCustomers(customers)
-
-          // Generate analysis results
-          setAnalysisResults({
-            potentialCustomers: customers,
-            insights: [
-              `We've identified ${customers} potential clients in your target market.`,
-              `Your ${
-                formData.productService.length > 0 ? formData.productService[0] : "business"
-              } has strong appeal in the ${formData.location || "specified"} region.`,
-              `Based on your description, we recommend focusing on direct outreach strategies.`,
-              `The highest concentration of potential clients is in the ${
-                formData.location || "local"
-              } business district.`,
-              `${Math.floor(customers * 0.35)} clients show high engagement potential based on their business profiles.`,
-            ],
-            timestamp: new Date().toLocaleString(),
-          })
-
-          // Generate sample client data
-          const industry = formData.sector || formData.productService[0] || "default"
-          const location = formData.location || "default"
-          const sampleClients = generateSampleClients(location, industry)
-          setPotentialClients(sampleClients)
-
-          // Transition to client results view
-          setCurrentView("clientResults")
-        } else {
-          // Move to next step to collect more information
-          setCurrentStep(1)
-          setCurrentView("form")
-        }
-      }, 3000)
-    }, 1000)
+        setIsSubmitting(false);
+        setIsAnalyzing(false);
+        setCurrentView("clientResults");
+      }, 1000);
+    } catch (error) {
+      setIsSubmitting(false);
+      setIsAnalyzing(false);
+      setAnalysisError(error.message || "An unexpected error occurred.");
+      setCurrentView("form");
+    }
   }
 
   // Function to handle creating marketing strategy
