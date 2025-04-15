@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param offset - Offset from the top of the element (default: 80px)
  * @param duration - Duration of the scroll animation in ms (default: 800ms)
  */
-export function smoothScrollTo(elementId: string, offset = 80, duration = 800) {
+export function smoothScrollTo(elementId: string, offset = -10, duration = 800) {
   const element = document.getElementById(elementId)
   if (!element) return
 

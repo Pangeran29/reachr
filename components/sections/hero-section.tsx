@@ -33,6 +33,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { offsetPositive } from "recharts/types/util/ChartUtils"
 
 // Define the client data type
 interface PotentialClient {
@@ -691,15 +692,15 @@ export function HeroSection() {
     if (typeof window !== "undefined") {
       // For mobile devices
       if (window.innerWidth < 640) {
-        return -20 // Smaller offset for mobile
+        return -40 // Smaller offset for mobile
       }
       // For tablets
       else if (window.innerWidth < 1024) {
-        return -40 // Medium offset for tablets
+        return -200 // Medium offset for tablets
       }
       // For desktops
       else {
-        return -60 // Larger offset for desktops
+        return -158 // Larger offset for desktops
       }
     }
     return -40 // Default offset

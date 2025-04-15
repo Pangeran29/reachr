@@ -87,7 +87,7 @@ export function Header() {
           >
             <span className="relative z-10 flex items-center gap-2">
               <LogIn className="h-4 w-4" />
-              <span>Log In</span>
+              <span>Get Access</span>
             </span>
             <span className="absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300 hover:opacity-20"></span>
           </Button>

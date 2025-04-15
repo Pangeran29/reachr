@@ -16,69 +16,70 @@ interface ModuleData {
   index: number
 }
 
+
+const modules: ModuleData[] = [
+  {
+    id: "lead-finder",
+    title: "Lead Finder",
+    icon: Search,
+    description: "Gathers B2B business data: name, category, location, WhatsApp number.",
+    color: "from-primary to-primary/80",
+    position: "top",
+    index: 0,
+  },
+  {
+    id: "ai-prompting",
+    title: "AI Prompting Engine",
+    icon: Sparkles,
+    description: "Generates promotional content, storytelling, and campaign strategies.",
+    color: "from-secondary to-secondary/80",
+    position: "top",
+    index: 1,
+  },
+  {
+    id: "strategic-flow",
+    title: "Strategic Flow Engine",
+    icon: Settings,
+    description: "Implements strategies such as the Rule of 7, one-time blasts, and soft CTAs.",
+    color: "from-emerald-500 to-emerald-500/80",
+    position: "top",
+    index: 2,
+  },
+  {
+    id: "whatsapp-automation",
+    title: "WhatsApp Automation",
+    icon: Smartphone,
+    description: "Sends automated messages according to the AI-designed flow.",
+    color: "from-emerald-500 to-emerald-500/80",
+    position: "bottom",
+    index: 2,
+  },
+  {
+    id: "lead-scoring",
+    title: "Lead Scoring & Tracking",
+    icon: Target,
+    description: "Identifies the most responsive prospects.",
+    color: "from-secondary to-secondary/80",
+    position: "bottom",
+    index: 1,
+  },
+  {
+    id: "analytics-dashboard",
+    title: "Analytics Dashboard",
+    icon: BarChart3,
+    description: "Displays campaign performance, conversions, and ROI in real-time.",
+    color: "from-primary to-primary/80",
+    position: "bottom",
+    index: 0,
+  },
+]
+
 export function InteractiveFlowDiagram() {
   const [activeModule, setActiveModule] = useState<string | null>(null)
   const [animationComplete, setAnimationComplete] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const diagramRef = useRef<HTMLDivElement>(null)
   const [isMobile, setIsMobile] = useState(false)
-
-  const modules: ModuleData[] = [
-    {
-      id: "lead-finder",
-      title: "Lead Finder",
-      icon: Search,
-      description: "Gathers B2B business data: name, category, location, WhatsApp number.",
-      color: "from-primary to-primary/80",
-      position: "top",
-      index: 0,
-    },
-    {
-      id: "ai-prompting",
-      title: "AI Prompting Engine",
-      icon: Sparkles,
-      description: "Generates promotional content, storytelling, and campaign strategies.",
-      color: "from-secondary to-secondary/80",
-      position: "top",
-      index: 1,
-    },
-    {
-      id: "strategic-flow",
-      title: "Strategic Flow Engine",
-      icon: Settings,
-      description: "Implements strategies such as the Rule of 7, one-time blasts, and soft CTAs.",
-      color: "from-emerald-500 to-emerald-500/80",
-      position: "top",
-      index: 2,
-    },
-    {
-      id: "whatsapp-automation",
-      title: "WhatsApp Automation",
-      icon: Smartphone,
-      description: "Sends automated messages according to the AI-designed flow.",
-      color: "from-emerald-500 to-emerald-500/80",
-      position: "bottom",
-      index: 2,
-    },
-    {
-      id: "lead-scoring",
-      title: "Lead Scoring & Tracking",
-      icon: Target,
-      description: "Identifies the most responsive prospects.",
-      color: "from-secondary to-secondary/80",
-      position: "bottom",
-      index: 1,
-    },
-    {
-      id: "analytics-dashboard",
-      title: "Analytics Dashboard",
-      icon: BarChart3,
-      description: "Displays campaign performance, conversions, and ROI in real-time.",
-      color: "from-primary to-primary/80",
-      position: "bottom",
-      index: 0,
-    },
-  ]
 
   useEffect(() => {
     const handleResize = () => {
@@ -165,14 +166,6 @@ export function InteractiveFlowDiagram() {
               {activeModule === module.id && (
                 <div className="border-t border-neutral-200/20 p-3 sm:p-4 pt-0 dark:border-neutral-800/20">
                   <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">{module.description}</p>
-                  <div className="mt-2 sm:mt-3 flex items-center">
-                    <div className="mr-2 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
-                      <Info className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary" />
-                    </div>
-                    <p className="text-xs sm:text-sm text-primary">
-                      Step {index + 1} in the client acquisition process
-                    </p>
-                  </div>
                 </div>
               )}
             </div>
@@ -371,10 +364,10 @@ function ModuleCard({ module, isActive, onClick, isVisible, delay, position }: M
             "transition-opacity duration-300",
           )}
         >
-          <span className="text-xs text-primary">
+          {/* <span className="text-xs text-primary">
             {position === "top" ? "Inputs data to system" : "Receives processed data"}
           </span>
-          <Info className="h-4 w-4 text-primary" />
+          <Info className="h-4 w-4 text-primary" /> */}
         </div>
       </div>
 
