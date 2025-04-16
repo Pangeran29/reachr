@@ -34,6 +34,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { offsetPositive } from "recharts/types/util/ChartUtils"
+import { skip } from "node:test"
 
 // Define the client data type
 interface PotentialClient {
@@ -556,18 +557,29 @@ export function HeroSection() {
 
       // Extract places and map them to the PotentialClient format
       const places = data.places.places || [];
-      const potentialClients = places.map((place, index) => ({
-        id: `client-${index + 1}`,
-        name: place.displayName.text,
-        address: place.formattedAddress,
-        phoneNumber: place.nationalPhoneNumber,
-        industry: "Unknown", // You can update this if the API provides industry info
-        matchScore: Math.floor(Math.random() * 30) + 70, // Generate a random match score
-        tags: ["High Growth", "Local"], // Add default tags or customize based on API response
-      }));
+      const potentialClients = [];
+      for (let index = 0; index < places.length; index++) {
+        const place = places[index];
+
+        // Hash the phone number
+        const phoneNumber = place.nationalPhoneNumber;
+        const hashedPhoneNumber = phoneNumber
+          ? phoneNumber.replace(/.(?=.{2})/g, "*") // Replace all but the last two characters with "*"
+          : "N/A";
+
+        potentialClients.push({
+          id: `client-${index + 1}`,
+          name: place.displayName.text,
+          address: place.formattedAddress,
+          phoneNumber: hashedPhoneNumber,
+          industry: "Unknown", // You can update this if the API provides industry info
+          matchScore: Math.floor(Math.random() * 30) + 70, // Generate a random match score
+          tags: ["High Growth", "Local"], // Add default tags or customize based on API response
+        });
+      }
 
       // Update state with the API response
-      setPotentialClients(potentialClients);
+      setPotentialClients(potentialClients.slice(0, 5)); // Limit to 5 clients for display
       setAnalysisResults({
         potentialCustomers: places.length,
         insights: data.keywords || [],
@@ -835,7 +847,7 @@ export function HeroSection() {
         // (to avoid stealing focus when the page first loads)
         if (focusableElements.length > 0 && view !== "initial") {
           // Focus the first interactive element
-          ;(focusableElements[0] as HTMLElement).focus({ preventScroll: true })
+          ; (focusableElements[0] as HTMLElement).focus({ preventScroll: true })
         }
       }
     }, 300) // Slightly longer timeout to ensure animations have started
@@ -1041,9 +1053,8 @@ export function HeroSection() {
 
                         <Button
                           type="submit"
-                          className={`group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary to-secondary py-3 text-white transition-all duration-300 hover:shadow-lg ${
-                            !businessInfo.trim() ? "opacity-50 cursor-not-allowed" : ""
-                          }`}
+                          className={`group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary to-secondary py-3 text-white transition-all duration-300 hover:shadow-lg ${!businessInfo.trim() ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
                           disabled={!businessInfo.trim() || isSubmitting}
                         >
                           <span className="relative z-10 flex items-center justify-center text-base font-medium">
@@ -1249,9 +1260,8 @@ export function HeroSection() {
                               variant="outline"
                               role="combobox"
                               aria-expanded={open}
-                              className={`w-full justify-between border border-white/10 bg-white/5 backdrop-blur-sm text-white hover:bg-white/10 hover:text-white transition-all duration-200 py-6 px-4 rounded-xl shadow-sm ${
-                                formErrors.productService ? "border-red-500" : "hover:border-primary/50"
-                              }`}
+                              className={`w-full justify-between border border-white/10 bg-white/5 backdrop-blur-sm text-white hover:bg-white/10 hover:text-white transition-all duration-200 py-6 px-4 rounded-xl shadow-sm ${formErrors.productService ? "border-red-500" : "hover:border-primary/50"
+                                }`}
                               disabled={isSubmitting}
                             >
                               <div className="flex items-center gap-2">
@@ -1310,17 +1320,15 @@ export function HeroSection() {
                                           key={option}
                                           value={option}
                                           onSelect={() => toggleProductService(option)}
-                                          className={`flex items-center justify-between py-2.5 px-3 text-sm transition-all duration-200 ${
-                                            isSelected
-                                              ? "bg-primary/15 text-white font-medium"
-                                              : "text-white/80 hover:bg-white/10 hover:text-white"
-                                          }`}
+                                          className={`flex items-center justify-between py-2.5 px-3 text-sm transition-all duration-200 ${isSelected
+                                            ? "bg-primary/15 text-white font-medium"
+                                            : "text-white/80 hover:bg-white/10 hover:text-white"
+                                            }`}
                                         >
                                           <div className="flex items-center gap-2">
                                             <div
-                                              className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${
-                                                isSelected ? "bg-primary/30" : "bg-white/10"
-                                              }`}
+                                              className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full ${isSelected ? "bg-primary/30" : "bg-white/10"
+                                                }`}
                                             >
                                               {isSelected ? (
                                                 <Check className="h-3 w-3 text-white" />
@@ -1404,9 +1412,8 @@ export function HeroSection() {
                           value={formData.description}
                           onChange={handleInputChange}
                           placeholder="Provide a detailed description of your business model, value proposition, and competitive advantages"
-                          className={`min-h-[100px] border-white/10 bg-white/5 text-white placeholder:text-white/40 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-track-transparent scrollbar-thumb-primary/40 hover:scrollbar-thumb-primary/60 ${
-                            formErrors.description ? "border-red-500" : ""
-                          }`}
+                          className={`min-h-[100px] border-white/10 bg-white/5 text-white placeholder:text-white/40 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-track-transparent scrollbar-thumb-primary/40 hover:scrollbar-thumb-primary/60 ${formErrors.description ? "border-red-500" : ""
+                            }`}
                         />
                         {formErrors.description ? (
                           <p className="text-xs text-red-500">{formErrors.description}</p>
@@ -1427,9 +1434,8 @@ export function HeroSection() {
                           value={formData.location}
                           onChange={handleInputChange}
                           placeholder="City, Region, Country or Global"
-                          className={`border-white/10 bg-white/5 text-white placeholder:text-white/40 ${
-                            formErrors.location ? "border-red-500" : ""
-                          }`}
+                          className={`border-white/10 bg-white/5 text-white placeholder:text-white/40 ${formErrors.location ? "border-red-500" : ""
+                            }`}
                         />
                         {formErrors.location ? (
                           <p className="text-xs text-red-500">{formErrors.location}</p>
@@ -1486,9 +1492,8 @@ export function HeroSection() {
                             value={formData.location}
                             onChange={handleInputChange}
                             placeholder="City, Region, Country or Global"
-                            className={`border-white/10 bg-white/5 text-white placeholder:text-white/40 ${
-                              formErrors.location ? "border-red-500" : ""
-                            }`}
+                            className={`border-white/10 bg-white/5 text-white placeholder:text-white/40 ${formErrors.location ? "border-red-500" : ""
+                              }`}
                           />
                           {formErrors.location && <p className="text-xs text-red-500">{formErrors.location}</p>}
                         </div>
@@ -1503,9 +1508,8 @@ export function HeroSection() {
                             value={formData.sector}
                             onChange={handleInputChange}
                             placeholder="e.g. Technology, Healthcare, Finance"
-                            className={`border-white/10 bg-white/5 text-white placeholder:text-white/40 ${
-                              formErrors.sector ? "border-red-500" : ""
-                            }`}
+                            className={`border-white/10 bg-white/5 text-white placeholder:text-white/40 ${formErrors.sector ? "border-red-500" : ""
+                              }`}
                           />
                           {formErrors.sector ? (
                             <p className="text-xs text-red-500">{formErrors.sector}</p>
@@ -1647,19 +1651,13 @@ export function HeroSection() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <h5 className="text-base font-medium text-white truncate">{client.name}</h5>
-                                <Badge className="bg-primary/20 text-primary text-xs h-5 px-1.5">
-                                  {client.matchScore}%
-                                </Badge>
+                                <Phone className="bg-primary/20 text-primary text-xs h-5 px-1.5" />
+                                <span className="bg-primary/20 text-primary text-xs h-5 px-1.5">{client.phoneNumber}</span>
                               </div>
                               <div className="mt-1 flex flex-col sm:flex-row sm:items-center sm:gap-3 text-xs text-white/60">
                                 <div className="flex items-center gap-1">
                                   <MapPin className="h-3 w-3 flex-shrink-0" />
-                                  <span className="truncate">{client.address}</span>
-                                </div>
-                                <div className="hidden sm:block h-1 w-1 rounded-full bg-white/30"></div>
-                                <div className="flex items-center gap-1">
-                                  <Phone className="h-3 w-3 flex-shrink-0" />
-                                  <span>{client.phoneNumber}</span>
+                                  <span className="truncate sm:whitespace-normal break-words">{client.address}</span>
                                 </div>
                               </div>
                             </div>
