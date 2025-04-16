@@ -532,8 +532,10 @@ export function HeroSection() {
 
     try {
       // Prepare the request body
+      const productService = formData.productService.join(", ");
+      const location = formData.location;
       const requestBody = {
-        businessDescription: formData.description,
+        businessDescription: formData.description + `.\n this business is located in ${location} and focus on to help business in sector: ${productService}`,
       }
 
       // Make the API call
@@ -1156,7 +1158,7 @@ export function HeroSection() {
                   </div>
                   <Button
                     onClick={resetForm}
-                    className="ml-auto rounded-full bg-white/10 p-1.5 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+                    className="ml-auto h-8 w-8 flex items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -1604,7 +1606,7 @@ export function HeroSection() {
                   </div>
                   <Button
                     onClick={resetForm}
-                    className="ml-auto rounded-full bg-white/10 p-1.5 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+                    className="ml-auto h-8 w-8 flex items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
                   >
                     <X className="h-4 w-4" />
                   </Button>
