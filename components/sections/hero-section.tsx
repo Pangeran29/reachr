@@ -1285,7 +1285,7 @@ export function HeroSection() {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent
-                            className="w-full p-0 max-h-[350px] overflow-y-auto border border-white/10 bg-neutral-800/95 backdrop-blur-md shadow-xl rounded-xl scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-track-transparent scrollbar-thumb-primary/40 hover:scrollbar-thumb-primary/60"
+                            className="w-full p-0 max-h-[350px] border border-white/10 bg-neutral-800/95 backdrop-blur-md shadow-xl rounded-xl scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-track-transparent scrollbar-thumb-primary/40 hover:scrollbar-thumb-primary/60"
                             align="start"
                             sideOffset={5}
                           >
@@ -1298,7 +1298,7 @@ export function HeroSection() {
                               </Command>
                             </div>
                             <Command className="bg-transparent text-white">
-                              <CommandList className="max-h-[300px] overflow-auto py-2">
+                              <CommandList className="max-h-[300px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-track-transparent scrollbar-thumb-primary/40 hover:scrollbar-thumb-primary/60">
                                 <CommandEmpty className="py-6 text-center text-sm text-white/60">
                                   No results found.
                                 </CommandEmpty>
