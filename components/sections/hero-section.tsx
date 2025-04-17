@@ -1685,7 +1685,7 @@ export function HeroSection() {
                             <p className="text-sm text-white/70">Total Potential Clients</p>
                             <p className="text-xl font-bold">
                               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                                {analysisResults?.potentialCustomers.toLocaleString() || "0"}
+                                {"500+"}
                               </span>
                             </p>
                           </div>
