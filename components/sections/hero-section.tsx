@@ -458,6 +458,7 @@ export function HeroSection() {
     const businessType = formData.productService.length > 0 ? formData.productService[0] : "business"
     const location = formData.location || "your area"
 
+
     return {
       title: `WhatsApp Marketing Strategy for ${businessType}`,
       description: `Based on your business profile and the identified potential clients in ${location}, we've developed a comprehensive WhatsApp marketing strategy designed to maximize engagement and conversion rates.`,
@@ -603,19 +604,48 @@ export function HeroSection() {
   }
 
   // Function to handle creating marketing strategy
-  const handleCreateMarketingStrategy = () => {
+  const handleCreateMarketingStrategy = async () => {
     setIsGeneratingStrategy(true)
     setCurrentView("analyzing")
     setAnalysisType("strategy")
+    setAnalysisError(null)
 
-    // Simulate strategy generation
-    setTimeout(() => {
-      const strategy = generateMarketingStrategy()
+    try {
+      const response = await fetch("https://reacher-api.alifwide.workers.dev/api/generate-marketing-strategy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessDescription: formData.description }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to generate marketing strategy. Please try again.")
+      }
+
+      const data = await response.json()
+      const messages: string[] = data.firstThreeMessages || []
+
+      const steps = messages.map((msg, idx) => ({
+        name: `Message ${idx + 1}`,
+        description: msg,
+        timing: "",
+        icon: Info,
+      }))
+
+      const strategy: MarketingStrategy = {
+        title: `WhatsApp Marketing Strategy`,
+        description: `Customized WhatsApp messages based on your business description.`,
+        steps,
+        expectedResults: [],
+      }
+
       setMarketingStrategy(strategy)
+    } catch (error) {
+      setAnalysisError(error instanceof Error ? error.message : "An unexpected error occurred.")
+    } finally {
       setIsGeneratingStrategy(false)
       setCurrentView("clientResults")
       setAnalysisType("strategy")
-    }, 3000)
+    }
   }
 
   const handleActionSelect = (action: string) => {
