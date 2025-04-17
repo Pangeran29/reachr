@@ -1746,8 +1746,9 @@ export function HeroSection() {
                       </CardHeader>
                       <CardContent className="pt-5 space-y-4">
                         {marketingStrategy?.steps.map((step, idx) => {
-                          const isSent = idx < sentCount
-                          const isNext = idx === sentCount
+                          const isSent = idx < sentCount;
+                          const isNext = idx === 0; // Enable the button only for the first item
+                          let counter = [1, 3, 5, 7, 9, 11, 13];
                           return (
                             <div
                               key={idx}
@@ -1755,7 +1756,7 @@ export function HeroSection() {
                             >
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <Badge className="bg-primary text-primary/10 px-2 py-1 text-xs">{step.timing}</Badge>
+                                  <Badge className="bg-primary/20 text-primary font-medium px-2 py-1"> Day {counter[idx]} </Badge>
                                   <h5 className="text-base font-medium text-white truncate">{step.name}</h5>
                                 </div>
                                 <p className="mt-2 text-sm text-white/70">{step.description}</p>
@@ -1766,16 +1767,16 @@ export function HeroSection() {
                                 ) : (
                                   <Button
                                     size="sm"
-                                    disabled={!isNext}
+                                    disabled={!isNext} // Disable the button for all items except the first
                                     onClick={async () => {
-                                      if (!isNext) return
-                                      await handleSendMessage(step.description)
-                                      setSentCount(idx + 1)
+                                      if (!isNext) return;
+                                      await handleSendMessage(step.description);
+                                      setSentCount(idx + 1);
                                     }}
                                     className={
                                       isNext
-                                        ? 'bg-gradient-to-r from-primary to-secondary text-white'
-                                        : 'opacity-50 cursor-not-allowed text-white'
+                                        ? "bg-gradient-to-r from-primary to-secondary text-white"
+                                        : "opacity-50 cursor-not-allowed text-white"
                                     }
                                   >
                                     Send
@@ -1783,7 +1784,7 @@ export function HeroSection() {
                                 )}
                               </div>
                             </div>
-                          )
+                          );
                         })}
                       </CardContent>
                     </Card>
@@ -1807,7 +1808,7 @@ export function HeroSection() {
                                   <span className="text-xs text-white/60 truncate">{client.phoneNumber}</span>
                                 </div>
                               </div>
-                              <span className="text-sm text-white ml-4 flex-shrink-0">{client.matchScore}%</span>
+                              {/* <span className="text-sm text-white ml-4 flex-shrink-0">{client.matchScore}%</span> */}
                             </div>
                           ))}
                         </div>
@@ -1829,9 +1830,24 @@ export function HeroSection() {
                             <div>Clients Reached</div>
                             <div>{potentialClients.length}</div>
                           </div>
+                          <div className="flex justify-between text-sm">
+                            <div>Clients Reached</div>
+                            <div>{potentialClients.length}</div>
+                          </div>
                         </div>
                         {/* End progress */}
                       </CardContent>
+                      <CardFooter className="flex justify-center border-t border-white/10 bg-white/[0.02] px-6 py-4">
+                        <Button
+                          onClick={() => {
+                            window.open("https://api.whatsapp.com/send/?phone=6282171558690&text=Hello+i+would+like+to+continue+to+use+reachr&type=phone_number&app_absent=0", "_blank"); // Replace "https://example.com" with your desired URL
+                          }}
+                          className="rounded-full bg-gradient-to-r from-primary to-secondary px-6 py-2 text-white transition-all duration-300 hover:shadow-lg"
+                        >
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Continue Campaign
+                        </Button>
+                      </CardFooter>
                     </Card>
                   </div>
                 )}

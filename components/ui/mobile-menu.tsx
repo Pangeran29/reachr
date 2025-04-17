@@ -81,7 +81,10 @@ export function MobileMenu({ links }: MobileMenuProps) {
             <div className="mt-8 flex flex-col gap-4">
               <Button
                 className="relative overflow-hidden rounded-full bg-gradient-to-r from-primary to-secondary text-white hover:shadow-lg"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false)
+                  window.open("https://api.whatsapp.com/send/?phone=6282171558690&text=Hello+i+want+to+use+reachr&type=phone_number&app_absent=0", "_blank"); // Replace "https://example.com" with your desired URL
+                }}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   <LogIn className="h-4 w-4" />

@@ -83,6 +83,9 @@ export function Header() {
         <div className="hidden items-center md:flex">
           <Button
             variant="default"
+            onClick={() => {
+              window.open("https://api.whatsapp.com/send/?phone=6282171558690&text=Hello+i+want+to+use+reachr&type=phone_number&app_absent=0", "_blank"); // Replace "https://example.com" with your desired URL
+            }}
             className="relative overflow-hidden rounded-full bg-gradient-to-r from-primary to-secondary px-6 py-2 text-white transition-all duration-300 hover:shadow-lg"
           >
             <span className="relative z-10 flex items-center gap-2">
