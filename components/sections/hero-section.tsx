@@ -566,16 +566,13 @@ export function HeroSection() {
         const place = places[index];
 
         // Hash the phone number
-        const phoneNumber = place.nationalPhoneNumber;
-        const hashedPhoneNumber = phoneNumber
-          ? phoneNumber.replace(/.(?=.{2})/g, "*") // Replace all but the last two characters with "*"
-          : "N/A";
+        const phone = place.nationalPhoneNumber || "N/A";
 
         potentialClients.push({
           id: `client-${index + 1}`,
           name: place.displayName.text,
           address: place.formattedAddress,
-          phoneNumber: hashedPhoneNumber,
+          phoneNumber: phone,
           industry: "Unknown", // You can update this if the API provides industry info
           matchScore: Math.floor(Math.random() * 30) + 70, // Generate a random match score
           tags: ["High Growth", "Local"], // Add default tags or customize based on API response
@@ -942,6 +939,27 @@ export function HeroSection() {
       }
     }
   }, [analysisTimeout])
+
+  // Helper to send a WhatsApp message via API; replace static number when ready
+  const handleSendMessage = async (message: string) => {
+    try {
+      const payload = {
+        data: [
+          {
+            phoneNumber: "6282171558690", // TODO: replace with dynamic client.phoneNumber when shipping
+            message,
+          },
+        ],
+      }
+      await fetch("https://reacher-api.alifwide.workers.dev/api/send-campaign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+    } catch (err) {
+      console.error("Failed to send message", err)
+    }
+  }
 
   return (
     <section className="relative w-full overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-900 py-20 sm:py-24 md:py-32 lg:py-40">
@@ -1529,7 +1547,11 @@ export function HeroSection() {
                             className={`border-white/10 bg-white/5 text-white placeholder:text-white/40 ${formErrors.location ? "border-red-500" : ""
                               }`}
                           />
-                          {formErrors.location && <p className="text-xs text-red-500">{formErrors.location}</p>}
+                          {formErrors.location ? (
+                            <p className="text-xs text-red-500">{formErrors.location}</p>
+                          ) : (
+                            <p className="text-xs text-white/50">Specify your primary industry</p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
@@ -1677,26 +1699,30 @@ export function HeroSection() {
 
                       {/* Streamlined potential clients list */}
                       <div className="space-y-2">
-                        {potentialClients.map((client) => (
-                          <div
-                            key={client.id}
-                            className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 hover:bg-white/[0.07] transition-colors"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <h5 className="text-base font-medium text-white truncate">{client.name}</h5>
-                                <Phone className="bg-primary/20 text-primary text-xs h-5 px-1.5" />
-                                <span className="bg-primary/20 text-primary text-xs h-5 px-1.5">{client.phoneNumber}</span>
-                              </div>
-                              <div className="mt-1 flex flex-col sm:flex-row sm:items-center sm:gap-3 text-xs text-white/60">
-                                <div className="flex items-center gap-1">
-                                  <MapPin className="h-3 w-3 flex-shrink-0" />
-                                  <span className="truncate sm:whitespace-normal break-words">{client.address}</span>
+                        {/* Scrollable list for long client names */}
+                        <div className="space-y-2 max-h-64 overflow-y-auto">
+                          {potentialClients.map((client) => (
+                            <div
+                              key={client.id}
+                              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 hover:bg-white/[0.07] transition-colors"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h5 className="text-base font-medium text-white truncate">{client.name}</h5>
+                                  <Phone className="bg-primary/20 text-primary text-xs h-5 px-1.5" />
+                                  <span className="bg-primary/20 text-primary text-xs h-5 px-1.5">{client.phoneNumber}</span>
+                                </div>
+                                <div className="mt-1 flex flex-col sm:flex-row sm:items-center sm:gap-3 text-xs text-white/60">
+                                  <div className="flex items-center gap-1">
+                                    <MapPin className="h-3 w-3 flex-shrink-0" />
+                                    <span className="truncate sm:whitespace-normal break-words">{client.address}</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
+                        {/* End scrollable list */}
                       </div>
                     </CardContent>
                     <CardFooter className="flex justify-center border-t border-white/10 bg-white/[0.02] px-6 py-4">
@@ -1741,7 +1767,11 @@ export function HeroSection() {
                                   <Button
                                     size="sm"
                                     disabled={!isNext}
-                                    onClick={() => setSentCount(idx + 1)}
+                                    onClick={async () => {
+                                      if (!isNext) return
+                                      await handleSendMessage(step.description)
+                                      setSentCount(idx + 1)
+                                    }}
                                     className={
                                       isNext
                                         ? 'bg-gradient-to-r from-primary to-secondary text-white'
@@ -1762,20 +1792,27 @@ export function HeroSection() {
                         <CardTitle className="text-xl">Target Clients</CardTitle>
                         <Badge className="bg-white/10 text-white/80">{potentialClients.length} Selected</Badge>
                       </CardHeader>
-                      <CardContent className="pt-5 space-y-2">
-                        {potentialClients.map((client) => (
-                          <div
-                            key={client.id}
-                            className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 hover:bg-white/[0.07] transition-colors"
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="h-2 w-2 rounded-full bg-green-500"></span>
-                              <h6 className="text-sm text-white truncate">{client.name}</h6>
+                      <CardContent className="pt-5 px-6 flex flex-col">
+                        {/* Scrollable list for long client names */}
+                        <div className="flex-1 overflow-y-auto space-y-2">
+                          {potentialClients.map((client) => (
+                            <div
+                              key={client.id}
+                              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 hover:bg-white/[0.07] transition-colors"
+                            >
+                              <div className="flex items-center gap-3 flex-1 min-w-0">
+                                <span className="h-2 w-2 rounded-full bg-green-500 flex-shrink-0"></span>
+                                <div className="flex flex-col truncate">
+                                  <h6 className="text-sm text-white truncate">{client.name}</h6>
+                                  <span className="text-xs text-white/60 truncate">{client.phoneNumber}</span>
+                                </div>
+                              </div>
+                              <span className="text-sm text-white ml-4 flex-shrink-0">{client.matchScore}%</span>
                             </div>
-                            <span className="text-sm text-white">{client.matchScore}%</span>
-                          </div>
-                        ))}
-                        <div className="mt-4">
+                          ))}
+                        </div>
+                        {/* Progress and stats */}
+                        <div className="mt-4 space-y-2">
                           <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
                             <div
                               className="h-full bg-gradient-to-r from-primary via-secondary to-primary"
@@ -1784,15 +1821,16 @@ export function HeroSection() {
                               }}
                             ></div>
                           </div>
+                          <div className="flex justify-between text-sm">
+                            <div>Messages Sent</div>
+                            <div>{sentCount}/{marketingStrategy?.steps.length || 0}</div>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <div>Clients Reached</div>
+                            <div>{potentialClients.length}</div>
+                          </div>
                         </div>
-                        <div className="mt-2 flex justify-between text-sm">
-                          <div>Messages Sent</div>
-                          <div>{sentCount}/{marketingStrategy?.steps.length || 0}</div>
-                        </div>
-                        <div className="mt-1 flex justify-between text-sm">
-                          <div>Clients Reached</div>
-                          <div>{potentialClients.length}</div>
-                        </div>
+                        {/* End progress */}
                       </CardContent>
                     </Card>
                   </div>
