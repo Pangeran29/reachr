@@ -75,6 +75,7 @@ export function HeroSection() {
   const [isGeneratingStrategy, setIsGeneratingStrategy] = useState(false)
   const [marketingStrategy, setMarketingStrategy] = useState<MarketingStrategy | null>(null)
   const [analysisType, setAnalysisType] = useState<"clients" | "strategy">("clients")
+  const [sentCount, setSentCount] = useState(0)
 
   const initialViewRef = useRef<HTMLDivElement>(null)
   const formViewRef = useRef<HTMLDivElement>(null)
@@ -639,6 +640,7 @@ export function HeroSection() {
       }
 
       setMarketingStrategy(strategy)
+      setSentCount(0)
     } catch (error) {
       setAnalysisError(error instanceof Error ? error.message : "An unexpected error occurred.")
     } finally {
@@ -1708,111 +1710,92 @@ export function HeroSection() {
                     </CardFooter>
                   </Card>
                 ) : (
-                  <Card className="mb-6 border-white/10 bg-white/5 text-white shadow-md">
-                    <CardHeader className="border-b border-white/10 bg-gradient-to-r from-primary/20 to-secondary/20 pb-4">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-xl">AI-Generated Marketing Strategy</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-5">
-                      {marketingStrategy && (
-                        <>
-                          {/* Strategy title and description */}
-                          <div className="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-                            <h3 className="text-lg font-medium text-white">{marketingStrategy.title}</h3>
-                            <p className="mt-2 text-sm text-white/80">{marketingStrategy.description}</p>
-                          </div>
-
-                          {/* Customer Funneling Explanation */}
-                          <div className="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
-                                <Users className="h-4 w-4 text-primary" />
-                              </div>
-                              <h3 className="font-medium text-white">Customer Funneling</h3>
-                            </div>
-                            <p className="text-sm text-white/80">
-                              Customer funneling is a strategic marketing approach that guides potential clients through
-                              a series of stages, from initial awareness to final conversion. This process begins with
-                              casting a wide net to attract attention, then progressively narrows by qualifying leads,
-                              nurturing interest, addressing objections, and finally converting prospects into clients.
-                              Each stage requires tailored messaging and engagement strategies to move prospects closer
-                              to a purchasing decision.
-                            </p>
-                          </div>
-
-                          {/* Rule of 7 Explanation */}
-                          <div className="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
-                                <Repeat className="h-4 w-4 text-primary" />
-                              </div>
-                              <h3 className="font-medium text-white">The Rule of 7 in Marketing</h3>
-                            </div>
-                            <p className="text-sm text-white/80">
-                              The Rule of 7 is a marketing principle that states a prospect needs to see or hear your
-                              marketing message at least seven times before they take action. This concept recognizes
-                              that most consumers don't convert after a single exposure to your brand. Instead,
-                              repeated, consistent messaging across multiple touchpoints builds familiarity, trust, and
-                              eventually prompts action. Our WhatsApp strategy implements this principle through a
-                              carefully timed sequence of messages that maintain engagement without overwhelming
-                              prospects.
-                            </p>
-                          </div>
-
-                          {/* Strategy Steps */}
-                          <div className="mb-6">
-                            <h3 className="font-medium text-white mb-4">Implementation Timeline</h3>
-                            <div className="space-y-3">
-                              {marketingStrategy.steps.map((step, index) => (
-                                <div
-                                  key={index}
-                                  className="rounded-lg border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/[0.07]"
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 mt-0.5">
-                                      <step.icon className="h-4 w-4 text-primary" />
-                                    </div>
-                                    <div>
-                                      <div className="flex items-center justify-between">
-                                        <h4 className="font-medium text-white">{step.name}</h4>
-                                        <Badge className="bg-white/10 text-white/80 border-white/20">
-                                          {step.timing}
-                                        </Badge>
-                                      </div>
-                                      <p className="mt-1 text-sm text-white/70">{step.description}</p>
-                                    </div>
-                                  </div>
+                  <div className="grid grid-cols-12 gap-6">
+                    <Card className="col-span-12 lg:col-span-8 mb-6 border-white/10 bg-white/5 text-white shadow-md">
+                      <CardHeader className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-primary/20 to-secondary/20 px-6 py-4">
+                        <CardTitle className="text-xl">Marketing Messages</CardTitle>
+                        <Badge className="bg-white/10 text-white/80">
+                          {sentCount}/{marketingStrategy?.steps.length || 0} Sent
+                        </Badge>
+                      </CardHeader>
+                      <CardContent className="pt-5 space-y-4">
+                        {marketingStrategy?.steps.map((step, idx) => {
+                          const isSent = idx < sentCount
+                          const isNext = idx === sentCount
+                          return (
+                            <div
+                              key={idx}
+                              className="flex items-start justify-between rounded-lg border border-white/10 bg-white/5 p-4 hover:bg-white/[0.07] transition-colors"
+                            >
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <Badge className="bg-primary text-primary/10 px-2 py-1 text-xs">{step.timing}</Badge>
+                                  <h5 className="text-base font-medium text-white truncate">{step.name}</h5>
                                 </div>
-                              ))}
+                                <p className="mt-2 text-sm text-white/70">{step.description}</p>
+                              </div>
+                              <div className="ml-4 flex-shrink-0">
+                                {isSent ? (
+                                  <Badge className="bg-green-500 text-white">Sent</Badge>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    disabled={!isNext}
+                                    onClick={() => setSentCount(idx + 1)}
+                                    className={
+                                      isNext
+                                        ? 'bg-gradient-to-r from-primary to-secondary text-white'
+                                        : 'opacity-50 cursor-not-allowed text-white'
+                                    }
+                                  >
+                                    Send
+                                  </Button>
+                                )}
+                              </div>
                             </div>
-                          </div>
-
-                          {/* Expected Results */}
-                          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-                            <h3 className="font-medium text-white mb-3">Expected Results</h3>
-                            <div className="space-y-2">
-                              {marketingStrategy.expectedResults.map((result, index) => (
-                                <div key={index} className="flex items-start gap-2">
-                                  <div className="mt-1 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0"></div>
-                                  <p className="text-sm text-white/80">{result}</p>
-                                </div>
-                              ))}
+                          )
+                        })}
+                      </CardContent>
+                    </Card>
+                    <Card className="col-span-12 lg:col-span-4 mb-6 border-white/10 bg-white/5 text-white shadow-md">
+                      <CardHeader className="flex items-center justify-between border-b border-white/10 bg-gradient-to-r from-primary/20 to-secondary/20 px-6 py-4">
+                        <CardTitle className="text-xl">Target Clients</CardTitle>
+                        <Badge className="bg-white/10 text-white/80">{potentialClients.length} Selected</Badge>
+                      </CardHeader>
+                      <CardContent className="pt-5 space-y-2">
+                        {potentialClients.map((client) => (
+                          <div
+                            key={client.id}
+                            className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 hover:bg-white/[0.07] transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                              <h6 className="text-sm text-white truncate">{client.name}</h6>
                             </div>
+                            <span className="text-sm text-white">{client.matchScore}%</span>
                           </div>
-                        </>
-                      )}
-                    </CardContent>
-                    <CardFooter className="flex justify-center border-t border-white/10 bg-white/[0.02] px-6 py-4">
-                      <Button
-                        onClick={() => setAnalysisType("clients")}
-                        className="rounded-full bg-white/10 px-6 py-2 text-white transition-all duration-300 hover:bg-white/20"
-                      >
-                        <Search className="mr-2 h-4 w-4" />
-                        View Potential Clients
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                        ))}
+                        <div className="mt-4">
+                          <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+                            <div
+                              className="h-full bg-gradient-to-r from-primary via-secondary to-primary"
+                              style={{
+                                width: `${(sentCount / (marketingStrategy?.steps.length || 1)) * 100}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="mt-2 flex justify-between text-sm">
+                          <div>Messages Sent</div>
+                          <div>{sentCount}/{marketingStrategy?.steps.length || 0}</div>
+                        </div>
+                        <div className="mt-1 flex justify-between text-sm">
+                          <div>Clients Reached</div>
+                          <div>{potentialClients.length}</div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 )}
               </motion.div>
             )}
