@@ -580,7 +580,7 @@ export function HeroSection() {
       }
 
       // Update state with the API response
-      setPotentialClients(potentialClients.slice(0, 5)); // Limit to 5 clients for display
+      setPotentialClients(potentialClients); // Limit to 5 clients for display
       setAnalysisResults({
         potentialCustomers: places.length,
         insights: data.keywords || [],
